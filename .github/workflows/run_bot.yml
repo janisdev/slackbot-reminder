@@ -6,7 +6,7 @@ on:
     # Latvijas ziema (UTC+2): 08:00 -> 06:00 UTC, 14:00 -> 12:00 UTC
     # Latvijas vasara (UTC+3): Jāņem vērā, ka stunda nobīdīsies.
     # Šis iestatījums ir 06:00 un 12:00 UTC (apm. 08:00 un 14:00 LV ziemā)
-    - cron: '0 6,12 * * *'
+    - cron: '0 12 * * *'
 
   # Ļauj palaist manuāli no "Actions" tabas testēšanai
   workflow_dispatch:

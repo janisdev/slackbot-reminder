@@ -35,5 +35,5 @@ jobs:
         run: echo '${{ secrets.APP_CONFIG_JSON }}' > config.json
 
       - name: Run Slack Bot
-        run: python tavs_skripta_nosaukums.py
+        run: python slack_remind.py
         # Nomain 'tavs_skripta_nosaukums.py' uz reālo faila nosaukumu (piem., main.py)

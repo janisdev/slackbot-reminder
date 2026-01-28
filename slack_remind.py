@@ -84,10 +84,12 @@ def main():
     config = load_config()
     token = config.get("SLACK_BOT_TOKEN")
     
-    # Iegūstam tēmturi no konfiga un uzreiz to normalizējam
-    # Tas nozīmē, ka konfigā var būt "#Svarīgi", bet mēs meklēsim "#svarigi"
+    # Ielādējam ignorējamo lietotāju sarakstu
+    # Ja saraksta nav, izmantojam tukšu sarakstu
+    ignore_users = config.get("IGNORE_USERS", [])
+    
     raw_hashtag = config.get("TARGET_HASHTAG", "#svarigi")
-    search_hashtag = normalize_text(raw_hashtag)  # <--- JAUNS: Normalizējam meklējamo frāzi
+    search_hashtag = normalize_text(raw_hashtag)
     
     base_message = config.get("REMINDER_MESSAGE", "Sveiks! Pamanīju, ka neesi reaģējis uz šīm svarīgajām ziņām:")
 
@@ -98,7 +100,7 @@ def main():
     client = WebClient(token=token)
     
     print(f"--- Sāku darbu ---")
-    print(f"Meklēju ziņas ar tēmturi (normalizēts): '{search_hashtag}'") # Debug info
+    print(f"Meklēju ziņas ar tēmturi (normalizēts): '{search_hashtag}'")
     
     channels = get_all_channels(client)
     print(f"✅ Bots atrast {len(channels)} kanālos, kuros tas ir dalībnieks.")
@@ -114,14 +116,11 @@ def main():
             history = client.conversations_history(channel=channel_id, limit=50)
             messages = history['messages']
 
-            # <--- IZMAIŅA: Filtrēšanas loģika
             target_messages = []
             for m in messages:
                 raw_text = m.get('text', '')
-                # Mēs normalizējam ziņas tekstu TIKAI priekš pārbaudes
                 if search_hashtag in normalize_text(raw_text):
                     target_messages.append(m)
-            # <--- IZMAIŅA BEIDZAS
 
             if not target_messages:
                 continue 
@@ -147,7 +146,14 @@ def main():
                 list_item = f"• [#{channel_name}] *{preview_text}*\n   👉 {permalink}"
 
                 for member_id in channel_member_ids:
+                    # Pārbaude: Vai lietotājs ir bots, vai jau reaģējis, VAI ir "ignore" sarakstā
                     if member_id == "USLACKBOT" or member_id in reacted_ids:
+                        continue
+                    
+                    # JAUNS: Pārbaude pret config faila sarakstu
+                    if member_id in ignore_users:
+                        # Debugam var atstāt, lai redzētu, ka tiek ignorēts
+                        # print(f"Izlaižu ignorēto aģentu: {member_id}")
                         continue
                     
                     if member_id not in all_users_pending_items:
@@ -162,6 +168,11 @@ def main():
     sent_count = 0
     
     for member_id, items in all_users_pending_items.items():
+        # Papildu drošība: pārbaudām arī šeit, ja nu kāds ID iekļuvis sarakstā citādi
+        if member_id in ignore_users:
+            print(f"🚫 Izlaižu lietotāju {member_id} (atrodas IGNORE_USERS sarakstā).")
+            continue
+
         try:
             user_info = client.users_info(user=member_id)
             user = user_info['user']

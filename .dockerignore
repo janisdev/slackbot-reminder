@@ -1,0 +1,10 @@
+.git
+.gitignore
+__pycache__
+.venv
+config.json
+*.pyc
+*.pyo
+*.pyd
+README.md
+run_local.bat

@@ -1,1 +1,1 @@
-slack.sdk
+slack-sdk

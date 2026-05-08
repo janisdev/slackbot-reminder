@@ -1,0 +1,9 @@
+{
+  "SLACK_BOT_TOKEN": "xoxb-PASTE_YOUR_TOKEN_HERE",
+  "CHANNEL_ID": "C0A0X8916SZ",
+  "TARGET_HASHTAG": "#svarigi",
+  "REMINDER_MESSAGE": "Hey! Pamaniju, ka neesi reagejis uz sim svarigajam zinam, ieliec kadu emoji lai redzu ka ir izlasits.",
+  "TEST_RECIPIENTS": ["U0123456789"],
+  "IGNORE_USERS": ["U0AC92J2G7J", "U08FKGWCY95"],
+  "RUN_TIMES": ["08:00", "14:00"]
+}

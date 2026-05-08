@@ -1,0 +1,9 @@
+services:
+  slack-reminder:
+    build: .
+    container_name: slack-reminder
+    working_dir: /app
+    restart: unless-stopped
+    volumes:
+      - ./config.json:/app/config.json:ro
+    command: ["python", "slack_remind.py", "--daemon"]
